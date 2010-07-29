@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 
+use Games::Angscum;
+
+system('angband');
+
 __END__
 
 =pod
