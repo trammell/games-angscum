@@ -5,17 +5,25 @@ use warnings;
 
 use Games::Angscum;
 
-system('angband');
+Games::Angscum->repl;
 
-__END__
+#system('angband');
 
 =pod
 
 =head1 NAME
 
+angscum - Angband save-scummer
+
 =head1 SYNOPSIS
+
+    angscum
 
 =head1 DESCRIPTION
 
-=cut
 
+=head1 SEE ALSO
+
+Games::Angscum
+
+=cut
