@@ -5,9 +5,8 @@ use warnings;
 
 use Games::Angscum;
 
-Games::Angscum->repl;
-
-#system('angband');
+my $scum = Games::Angscum->new(@ARGV);
+$scum->run;
 
 =pod
 
