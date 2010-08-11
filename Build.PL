@@ -5,7 +5,7 @@ use Module::Build;
 my $builder = Module::Build->new(
     module_name => 'Games::Angscum',
     license     => 'perl',
-    dist_author => 'John Trammell <johntrammell@gmail.com>',
+    dist_author => 'John Trammell <johntrammell (at) gmail (dot) com>',
     requires => {
         'perl'             => 0,
         'strict'           => 0,
