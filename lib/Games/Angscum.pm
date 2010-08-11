@@ -2,18 +2,24 @@ package Games::Angscum;
 
 use strict;
 use warnings;
-use AppConfig;
 use File::Copy 'copy';
-use File::HomeDir;
-use File::Spec;
-use File::Which;
-#use Params::Validate;      # FIXME
+use Params::Validate;      # FIXME
 
 our $VERSION = 0.01;
 
-=head2 repl()
+=pod
 
-Read/Eval/Print Loop
+=head1 NAME
+
+Games::Angscum - savefile scummer for Angband
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 METHODS
+
+=head2 $class->new()
 
 =cut
 
@@ -24,38 +30,18 @@ sub new {
     return $self;
 }
 
+=head2 $obj->init()
+
+=cut
+
 sub init {
     my ($self, @args) = @_;
     $self->ui->init();
 }
 
-sub config {
-    my $self = shift;
-    my $config ||= do {
-        my $app = AppConfig->new();
-        $app->define(ui => { DEFAULT => 'Games::Angscum::TUI' });
-        $app->file($self->config_file);
-        $app;
-    };
-}
+=head2 $obj->run()
 
-sub config_file {
-    my $self = shift;
-    if (@_) {
-        $self->{config_file} = shift;
-    }
-    $self->{config_file} ||= do {
-        my $home = File::HomeDir->my_home;
-        my $file = File::Spec->catfile($home, qw/ .angscum config /);
-        # FIXME: is there a 'touch' command?
-        if (not -e $file) {
-            open(my $fh, q(>), $file) or die $!;
-            print {$fh} "";
-            $fh->close();
-        }
-        $file;
-    };
-}
+=cut
 
 sub run {
     my $self = shift;
@@ -65,49 +51,31 @@ sub run {
     }
 }
 
-sub angband {
-    my $self = shift;
-    if (@_) {
-        $self->{angaband} = shift;
-    }
-    $self->{angband} ||= do {
-        File::Which::which('angband');
-    };
-}
+=head2 $obj->save()
 
-sub read_config {
-    my $self = shift;
-    $self->{config} ||= do {
-        my %x;
-        \%x;
-    };
-}
+=cut
 
 sub save {
-    my $gamefile = '/sw/var/games/angband-nox/lib/save/501.Johntrammell';
-    my $savedir = "$ENV{HOME}/.angscum/";
-    my $savefile = $savedir . 'save.0';
-    print "copying '$gamefile' to '$savefile'\n";
-    copy($gamefile, $savefile) or die $!;
+    my $savefile = '/sw/var/games/angband-nox/lib/save/501.Johntrammell';
+    my $scumdir = "$ENV{HOME}/.angscum/";
+    my $scumfile = $scumdir . 'save.0';
+    print "copying '$savefile' to '$scumfile'\n";
+    copy($savefile, $scumfile) or die $!;
 }
 
 sub restore {
     my $n = shift;
-    my $gamefile = '/sw/var/games/angband-nox/lib/save/501.Johntrammell';
-    my $savedir = "$ENV{HOME}/.angscum/";
-    my $savefile = $savedir . 'save.' . $n;
-    print "copying '$savefile' to '$gamefile'\n";
-    copy($savefile, $gamefile) or die $!;
-}
-
-sub repl {
-    system('angband');
+    my $savefile = '/sw/var/games/angband-nox/lib/save/501.Johntrammell';
+    my $scumdir = "$ENV{HOME}/.angscum/";
+    my $scumfile = $scumdir . 'save.' . $n;
+    print "copying '$scumfile' to '$savefile'\n";
+    copy($scumfile, $savefile) or die $!;
 }
 
 sub ui {
     my $self = shift;
     $self->{ui} ||= do {
-        my $ui_class = $self->config->get('ui');
+        my $ui_class = $self->config('ui');
         eval qq/ use $ui_class; /;
         $ui_class->new();
     };
