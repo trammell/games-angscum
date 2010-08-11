@@ -7,6 +7,7 @@ use File::Copy 'copy';
 use File::HomeDir;
 use File::Spec;
 use File::Which;
+#use Params::Validate;      # FIXME
 
 our $VERSION = 0.01;
 
@@ -19,14 +20,23 @@ Read/Eval/Print Loop
 sub new {
     my $class = shift;
     my $self = bless {}, $class;
-
+    $self->init(@_);
     return $self;
+}
+
+sub init {
+    my ($self, @args) = @_;
+    $self->ui->init();
 }
 
 sub config {
     my $self = shift;
-    my $config = AppConfig->new();
-    $config->file($self->config_file);
+    my $config ||= do {
+        my $app = AppConfig->new();
+        $app->define(ui => { DEFAULT => 'Games::Angscum::TUI' });
+        $app->file($self->config_file);
+        $app;
+    };
 }
 
 sub config_file {
@@ -36,7 +46,14 @@ sub config_file {
     }
     $self->{config_file} ||= do {
         my $home = File::HomeDir->my_home;
-        File::Spec->catfile($home, qw/ .angscum config /);
+        my $file = File::Spec->catfile($home, qw/ .angscum config /);
+        # FIXME: is there a 'touch' command?
+        if (not -e $file) {
+            open(my $fh, q(>), $file) or die $!;
+            print {$fh} "";
+            $fh->close();
+        }
+        $file;
     };
 }
 
@@ -87,6 +104,13 @@ sub repl {
     system('angband');
 }
 
-save();
+sub ui {
+    my $self = shift;
+    $self->{ui} ||= do {
+        my $ui_class = $self->config->get('ui');
+        eval qq/ use $ui_class; /;
+        $ui_class->new();
+    };
+}
 
 1;
