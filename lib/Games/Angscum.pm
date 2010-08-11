@@ -4,8 +4,11 @@ use strict;
 use warnings;
 use File::Copy 'copy';
 use Params::Validate;      # FIXME
+use parent 'Class::Accessor::Fast';
 
 our $VERSION = 0.01;
+
+__PACKAGE__->mk_accessors(qw/config_hash/);
 
 =pod
 
@@ -36,7 +39,18 @@ sub new {
 
 sub init {
     my ($self, @args) = @_;
+    $self->config_hash({}) unless $self->config_hash;
     $self->ui->init();
+}
+
+sub config {
+    my $self = shift;
+    if (@_) {
+        return $self->config_hash()->{ $_[0] };
+    }
+    else {
+        return $self->config_hash();
+    }
 }
 
 =head2 $obj->run()
