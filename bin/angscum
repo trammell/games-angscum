@@ -3,9 +3,13 @@
 use strict;
 use warnings;
 
+use AppConfig;
 use Games::Angscum;
 use Getopt::Long;
 use Pod::Usage;
+use File::HomeDir;
+use File::Spec;
+use File::Touch;
 
 my %opts = (help => undef, verbose => undef);
 GetOptions(\%opts, 'help|h', 'verbose|v+');
@@ -14,6 +18,27 @@ pod2usage(-verbose => 2) if $opts{help};
 
 my $scum = Games::Angscum->new(%opts);
 $scum->run;
+
+my $config;
+sub config {
+    $config ||= do {
+        my $app = AppConfig->new();
+        $app->define(ui => { DEFAULT => 'Games::Angscum::TUI' });
+        $app->file(config_file());
+        $app;
+    };
+}
+
+my $config_file;
+sub config_file {
+    $config_file ||= do {
+        my $home = File::HomeDir->my_home;
+        my $file = File::Spec->catfile($home, qw/ .angscum config /);
+        touch($file) unless -e $file;
+        $file;
+    };
+}
+
 
 =pod
 
