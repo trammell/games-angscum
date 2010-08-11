@@ -4,8 +4,15 @@ use strict;
 use warnings;
 
 use Games::Angscum;
+use Getopt::Long;
+use Pod::Usage;
 
-my $scum = Games::Angscum->new(@ARGV);
+my %opts = (help => undef, verbose => undef);
+GetOptions(\%opts, 'help|h', 'verbose|v+');
+
+pod2usage(-verbose => 2) if $opts{help};
+
+my $scum = Games::Angscum->new(%opts);
 $scum->run;
 
 =pod
@@ -16,13 +23,32 @@ angscum - Angband save-scummer
 
 =head1 SYNOPSIS
 
-    angscum
+    angscum [-h|--help] [-v|--verbose]
 
 =head1 DESCRIPTION
 
+In the game Angband and its variants, "game saving" is not supported.  Saving
+the game state is called "scumming". This script enables "scumming" by
+allowing the player to save up to 5 different copies of their game state,
+along with timestamps and short textual descriptions.
+
+=head1 OPTIONS
+
+=head2 -h, --help
+
+Shows a helpful message.
+
+=head2 -v, --verbose
+
+Turns on verbose execution.
+
+=head1 CONFIGURATION
+
+Add info about resource file here
 
 =head1 SEE ALSO
 
-Games::Angscum
+angband(1)
+Games::Angscum(3pm)
 
 =cut
